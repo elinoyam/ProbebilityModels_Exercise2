@@ -33,3 +33,6 @@ class VocabularySet:
     def insert(self, dict):
         """ This method will insert or update words counter in vocabulary. """
         self.words.update(dict)
+
+    def get_words_by_appearances(self):
+        return self.words.most_common()
