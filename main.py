@@ -29,27 +29,27 @@ if __name__ == '__main__':
     unseen_word_freq = training_set['unseen-word'] / training_set.total() 
     files_handler.write_to_output_file(13, input_word_freq)
 
-    lidstone_model_010 = ProbabilityModel(training_set.words, 0.10)
+    lidstone_model_010 = ProbabilityModel(training_set.words,model_type="Lidstone", gamma=0.10)
     lidstone_propability_input = lidstone_model_010.score(files_handler.input_word)
     files_handler.write_to_output_file(14, lidstone_propability_input)
     
     lidstone_propability_unseen = lidstone_model_010.score('unseen-word')
     files_handler.write_to_output_file(15, lidstone_propability_unseen)
     
-    lidstone_model_001 = ProbabilityModel(training_set.words, 0.01)
+    lidstone_model_001 = ProbabilityModel(training_set.words,model_type="Lidstone",model_type="Lidstone", gamma=0.01)
     lidstone_preplexity_001 = lidstone_model_010.perplexity(validation_set)
     files_handler.write_to_output_file(16, lidstone_preplexity_001)
     
     lidstone_preplexity_010 = lidstone_model_010.perplexity(validation_set)
     files_handler.write_to_output_file(17, lidstone_preplexity_010)
     
-    lidstone_model_100 = ProbabilityModel(training_set.words, 1.00)
+    lidstone_model_100 = ProbabilityModel(training_set.words,model_type="Lidstone", gamma=1.00)
     lidstone_preplexity_100 = lidstone_model_010.perplexity(validation_set)
     files_handler.write_to_output_file(18, lidstone_preplexity_100)
 
     min_preplexity, best_gamma = math.inf, -1
     for gamma in range(0, 2, 0.01):
-        lidstone_model = ProbabilityModel(training_set.words, gamma)
+        lidstone_model = ProbabilityModel(training_set.words,model_type="Lidstone", gamma=gamma)
         preplexity = lidstone_model.perplexity(validation_set)
         if preplexity < min_preplexity:
             min_preplexity = preplexity
@@ -65,43 +65,12 @@ if __name__ == '__main__':
     files_handler.write_to_output_file(21, small_training_set_size)
     files_handler.write_to_output_file(22, held_out_set_size)
 
-    # compute each seen word in T probability
-    r_classes = {}
+    heldout_model = ProbabilityModel(small_training_set.words, model_type="HeldOut")
+    heldout_model.set_held_out_data(small_training_set, held_out_set)
 
-    # group words by the number of appearances in small_training_set
-    for key, r in small_training_set.get_words_by_appearances():
-        if r not in r_classes:     # first word with r appearances
-            r_classes[r] = [key]
-        else:   # add the word to the existing words list with the same appearances count
-            r_classes[r].append(key)
-
-    # get all the words not in small_training_set and yes in held_out_set
-    for key, r in held_out_set.get_words_by_appearances():
-        if key not in small_training_set:
-            if 0 not in r_classes:
-                r_classes[0] = [key]
-            else:
-                r_classes[0].append(key)
-
-    T_r = {}
-
-    # for each group of appearances - count the number of appearances in held_out_set
-    for r, words_list in r_classes:
-        for word in words_list:
-            if r not in T_r:  # first word with r appearances
-                T_r[r] = held_out_set[word]
-            else:
-                T_r[r] += held_out_set[word]
-
-    # calculate each r_class probability (all the words in each r class will be with the same probability)
-    held_out_probability = {}
-    for r, total in T_r:
-        # if r not in held_out_probability:  # first word with r appearances
-        held_out_probability[r] = total / (len(r_classes[r]) * held_out_set_size)
-
-    input_word_prob = held_out_probability[small_training_set[files_handler.input_word]] if files_handler.input_word in small_training_set else held_out_probability[0]
+    input_word_prob = heldout_model.score(files_handler.input_word)
     files_handler.write_to_output_file(23, input_word_prob)
-    unseen_word_prob = held_out_probability[0]
+    unseen_word_prob = heldout_model.score('unseen-word')
     files_handler.write_to_output_file(24, unseen_word_prob)
 
 
@@ -109,13 +78,11 @@ if __name__ == '__main__':
     test_set_size = test_set.total()
     files_handler.write_to_output_file(25, test_set_size)
 
-    lidstone_best_model = ProbabilityModel(training_set.words, best_gamma)
+    lidstone_best_model = ProbabilityModel(training_set.words,model_type="Lidstone", gamma=best_gamma)
     lidstone_best_preplexity = lidstone_best_model.perplexity(test_set)
     files_handler.write_to_output_file(26, lidstone_best_preplexity)
 
-
-    held_out_probabilities = [held_out_probability[small_training_set[word]] if word in small_training_set else held_out_probability[0] for word in test_set.keys()]
-    held_out_perplexity = pow(2, ((-1 / test_set.total()) * sum(map(math.log, held_out_probabilities))))
+    held_out_perplexity = heldout_model.perplexity(test_set)
     files_handler.write_to_output_file(27, held_out_perplexity)
 
     better_model = 'L' if lidstone_best_preplexity > held_out_perplexity else 'H'
