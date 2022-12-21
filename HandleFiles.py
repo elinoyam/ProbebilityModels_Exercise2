@@ -17,7 +17,7 @@ class FilesHandler:
 
     def initialize_output_file(self):
         with open(file=self.output_file, mode='a') as output_file:
-            output_file.write(f'Eden Mironi Id-____, Elinoy Amar Id-318532132\n')
+            output_file.write(f'Eden Mironi Id-207856097, Elinoy Amar Id-318532132\n')
             output_file.write(f'Output1 {self.development_file}\n')
             output_file.write(f'Output2 {self.test_file}\n')
             output_file.write(f'Output3 {self.input_word}\n')

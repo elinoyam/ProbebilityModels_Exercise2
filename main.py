@@ -105,6 +105,24 @@ if __name__ == '__main__':
     files_handler.write_to_output_file(24, unseen_word_prob)
 
 
+    test_set, _ = files_handler.get_vocabulary_from_file('test', split_size=1.0)
+    test_set_size = test_set.total()
+    files_handler.write_to_output_file(25, test_set_size)
+
+    lidstone_best_model = ProbabilityModel(training_set.words, best_gamma)
+    lidstone_best_preplexity = lidstone_best_model.perplexity(test_set)
+    files_handler.write_to_output_file(26, lidstone_best_preplexity)
+
+
+    held_out_probabilities = [held_out_probability[small_training_set[word]] if word in small_training_set else held_out_probability[0] for word in test_set.keys()]
+    held_out_perplexity = pow(2, ((-1 / test_set.total()) * sum(map(math.log, held_out_probabilities))))
+    files_handler.write_to_output_file(27, held_out_perplexity)
+
+    better_model = 'L' if lidstone_best_preplexity > held_out_perplexity else 'H'
+    files_handler.write_to_output_file(28, better_model)
+
+
+
 
 
 
