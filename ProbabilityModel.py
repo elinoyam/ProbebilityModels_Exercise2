@@ -1,4 +1,4 @@
-import main
+import HandleFiles
 import math
 
 class ProbabilityModel:
@@ -13,7 +13,7 @@ class ProbabilityModel:
     
     def lidstone_propabilty(self, word):
         word_count = self.Counter[word]
-        return (word_count + self.gamma) / (self.Counter.total() + main.vocabulary_size  * self.gamma)
+        return (word_count + self.gamma) / (self.Counter.total() + HandleFiles.vocabulary_size  * self.gamma)
 
     def heldout_propabilty(self, word):
         return self.held_out_probability[self.Counter[word]] if word in self.Counter else self.held_out_probability[0]
@@ -58,6 +58,6 @@ class ProbabilityModel:
             # if r not in held_out_probability:  # first word with r appearances
             self.held_out_probability[r] = total / (len(self.r_classes[r]) * held_out_set.total())
 
-prob_model = ProbabilityModel()
+# prob_model = ProbabilityModel()
 
 

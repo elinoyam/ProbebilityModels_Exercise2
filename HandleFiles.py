@@ -1,6 +1,8 @@
-from ProbabilityModel import prob_model
 from Vocabulary import VocabularySet
-from main import vocabulary_size, uniform_probability
+from tabulate import tabulate
+
+vocabulary_size = 300000
+uniform_probability = 1/vocabulary_size
 
 class FilesHandler:
 
@@ -14,6 +16,11 @@ class FilesHandler:
     def write_to_output_file(self, row_number, value):
         with open(file=self.output_file, mode='a') as output_file:
             output_file.write(f'Output{row_number} {value}\n')
+    
+    def write_table_to_output_file(self, row_number, list):
+        with open(file=self.output_file, mode='a') as output_file:
+            output_file.write(f'Output{row_number}\n')
+            output_file.write(f'{tabulate(list)}\n')
 
     def initialize_output_file(self):
         with open(file=self.output_file, mode='a') as output_file:
