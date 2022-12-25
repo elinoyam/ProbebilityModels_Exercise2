@@ -39,11 +39,15 @@ class FilesHandler:
     def get_vocabulary_from_file(self, input_file = 'development', split_size=0.9):
         file_name = self.development_file if input_file == 'development' else self.test_file
         training_set, validation_set = VocabularySet(), VocabularySet()
+        list_of_all_words = []
         with open(file_name, mode='r') as file:
-            list_of_words = file.read().split()
-            training_set_size = round(len(list_of_words) * split_size) if split_size < 1.0 else len(list_of_words)
+            for line in file:
+                if line[:6] != '<TRAIN' and line[:5] != '<TEST':    # not a header line
+                    list_of_all_words.extend(line.split())
+
+            training_set_size = round(len(list_of_all_words) * split_size) if split_size < 1.0 else len(list_of_all_words)
             word_index = 0
-            for word in list_of_words:
+            for word in list_of_all_words:
                 if word_index < training_set_size:
                     training_set[word] += 1
                 else:

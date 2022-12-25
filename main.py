@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     # training_set['unseen-word'] will return 0 if not exists, else calculate as the usual formula
     unseen_word_freq = training_set['unseen-word'] / training_set.total() 
-    files_handler.write_to_output_file(13, input_word_freq)
+    files_handler.write_to_output_file(13, unseen_word_freq)
 
     lidstone_model_010 = ProbabilityModel(training_set.words,model_type="Lidstone", gamma=0.10)
     lidstone_propability_input = lidstone_model_010.score(files_handler.input_word)
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     files_handler.write_to_output_file(18, lidstone_preplexity_100)
 
     min_preplexity, best_gamma = math.inf, -1
-    for gamma in arange(0, 2, 0.08):
+    for gamma in arange(0, 2, 0.06):
         lidstone_model = ProbabilityModel(training_set.words,model_type="Lidstone", gamma=float(gamma))
         preplexity = lidstone_model.perplexity(validation_set)
         if preplexity < min_preplexity:
