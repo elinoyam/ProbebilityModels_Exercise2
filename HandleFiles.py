@@ -17,13 +17,17 @@ class FilesHandler:
         with open(file=self.output_file, mode='a') as output_file:
             output_file.write(f'Output{row_number} {value}\n')
     
-    def write_table_to_output_file(self, row_number, list):
+    def write_table_to_output_file(self, row_number, values_list):
         with open(file=self.output_file, mode='a') as output_file:
             output_file.write(f'Output{row_number}\n')
-            output_file.write(f'{tabulate(list)}\n')
+            for row in values_list:
+                print(row)
+                printable_list = [f'{round(item, 5)}' for item in row]
+                output_file.write("\t".join(printable_list) + "\n")
+            # output_file.write(f'{tabulate(list)}\n')
 
     def initialize_output_file(self):
-        with open(file=self.output_file, mode='a') as output_file:
+        with open(file=self.output_file, mode='w') as output_file:
             output_file.write(f'Eden Mironi Id-207856097, Elinoy Amar Id-318532132\n')
             output_file.write(f'Output1 {self.development_file}\n')
             output_file.write(f'Output2 {self.test_file}\n')
@@ -35,11 +39,15 @@ class FilesHandler:
     def get_vocabulary_from_file(self, input_file = 'development', split_size=0.9):
         file_name = self.development_file if input_file == 'development' else self.test_file
         training_set, validation_set = VocabularySet(), VocabularySet()
+        list_of_all_words = []
         with open(file_name, mode='r') as file:
-            list_of_words = file.read().split()
-            training_set_size = round(len(list_of_words) * split_size)
+            for line in file:
+                if line[:6] != '<TRAIN' and line[:5] != '<TEST':    # not a header line
+                    list_of_all_words.extend(line.split())
+
+            training_set_size = round(len(list_of_all_words) * split_size) if split_size < 1.0 else len(list_of_all_words)
             word_index = 0
-            for word in list_of_words:
+            for word in list_of_all_words:
                 if word_index < training_set_size:
                     training_set[word] += 1
                 else:

@@ -13,7 +13,10 @@ class VocabularySet:
         self.min_appearances = minimum_appearances
 
     def __len__(self):
-        return len(self.words)
+        return len(self.words.keys())
+
+    def keys(self):
+        return self.words.keys()
 
     def total(self):
         return self.words.total()
@@ -28,7 +31,10 @@ class VocabularySet:
         """
 
         counts = self.words[item]
-        return counts if counts > self.min_appearances else 0
+        return counts if counts >= self.min_appearances else 0
+
+    def __setitem__(self, key, value):
+        self.words[key] = value
 
     def insert(self, dict):
         """ This method will insert or update words counter in vocabulary. """

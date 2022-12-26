@@ -24,7 +24,7 @@ class ProbabilityModel:
     def perplexity(self, validation_vocab):
         ''' Compute model's perplexity over a given test vocabulary '''
 
-        probabilities = [self.score(word) for word in validation_vocab.keys()]
+        probabilities = [self.score(word) for word in validation_vocab.keys() if self.score(word) > 0]
 
         return pow(2, ((-1 / validation_vocab.total()) * sum(map(math.log, probabilities))))
     
@@ -46,7 +46,9 @@ class ProbabilityModel:
                     self.r_classes[0].append(key)
 
         # for each group of appearances - count the number of appearances in held_out_set
-        for r, words_list in self.r_classes:
+        #print(self.r_classes.keys())
+        for r in self.r_classes.keys():
+            words_list = self.r_classes[r]
             for word in words_list:
                 if r not in self.T_r:  # first word with r appearances
                     self.T_r[r] = held_out_set[word]
@@ -54,9 +56,11 @@ class ProbabilityModel:
                     self.T_r[r] += held_out_set[word]
 
         # calculate each r_class probability (all the words in each r class will be with the same probability)
-        for r, total in self.T_r:
+        for r in self.T_r.keys():
+            total = self.T_r[r]
             # if r not in held_out_probability:  # first word with r appearances
             self.held_out_probability[r] = total / (len(self.r_classes[r]) * held_out_set.total())
+
 
 # prob_model = ProbabilityModel()
 
