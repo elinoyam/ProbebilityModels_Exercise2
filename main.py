@@ -34,14 +34,14 @@ if __name__ == '__main__':
     files_handler.write_to_output_file(15, lidstone_propability_unseen)
     
     lidstone_model_001 = ProbabilityModel(training_set.words,model_type="Lidstone", gamma=0.01)
-    lidstone_preplexity_001 = lidstone_model_010.perplexity(validation_set)
+    lidstone_preplexity_001 = lidstone_model_001.perplexity(validation_set)
     files_handler.write_to_output_file(16, lidstone_preplexity_001)
     
     lidstone_preplexity_010 = lidstone_model_010.perplexity(validation_set)
     files_handler.write_to_output_file(17, lidstone_preplexity_010)
     
     lidstone_model_100 = ProbabilityModel(training_set.words,model_type="Lidstone", gamma=1.00)
-    lidstone_preplexity_100 = lidstone_model_010.perplexity(validation_set)
+    lidstone_preplexity_100 = lidstone_model_100.perplexity(validation_set)
     files_handler.write_to_output_file(18, lidstone_preplexity_100)
 
     min_preplexity, best_gamma = math.inf, -1
