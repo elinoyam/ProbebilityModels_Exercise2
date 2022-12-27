@@ -36,9 +36,9 @@ class VocabularySet:
     def __setitem__(self, key, value):
         self.words[key] = value
 
-    def insert(self, dict):
+    def insert(self, words):
         """ This method will insert or update words counter in vocabulary. """
-        self.words.update(dict)
+        self.words = Counter(words)
 
     def get_words_by_appearances(self):
         return self.words.most_common()
