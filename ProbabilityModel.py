@@ -3,17 +3,20 @@ import math
 
 class ProbabilityModel:
 
-    def __init__(self, counter, model_type="Lidstone", gamma=0):
+    def __init__(self, counter, model_type="Lidstone", gamma=0.01, train_words = None, test_words = None ):
         self.Counter = counter
         self.model_type = model_type
-        self.gamma = gamma
+        self.gamma = float(gamma)
         self.r_classes = {}
         self.T_r = {}
         self.held_out_probability = {}
+        self.train_set = train_words
+        self.test_set = test_words
+        self.counter_total = self.Counter.total()
     
-    def lidstone_propabilty(self, word):
-        word_count = self.Counter[word]
-        return (word_count + self.gamma) / (self.Counter.total() + HandleFiles.vocabulary_size  * self.gamma)
+    def lidstone_propabilty(self, word): # len(trainingSet) , vocabularySize = 300000
+        word_count = self.Counter[word] if word in self.Counter else 0
+        return float(word_count + self.gamma) / (self.counter_total + HandleFiles.vocabulary_size * self.gamma)
 
     def heldout_propabilty(self, word):
         return self.held_out_probability[self.Counter[word]] if word in self.Counter else self.held_out_probability[0]
@@ -24,10 +27,14 @@ class ProbabilityModel:
     def perplexity(self, validation_vocab):
         ''' Compute model's perplexity over a given test vocabulary '''
 
-        probabilities = [self.score(word) for word in validation_vocab.keys() if self.score(word) > 0]
+        prob_log_sum = 0
+        for word in self.test_set:
+            prob = self.score(word)
+            if prob > 0:
+                prob_log_sum += math.log(prob)
 
-        return pow(2, ((-1 / validation_vocab.total()) * sum(map(math.log, probabilities))))
-    
+        return math.exp(-(prob_log_sum / len(self.test_set)))
+
     def set_held_out_data(self, small_training_set, held_out_set):
         # compute each seen word in T probability
         # group words by the number of appearances in small_training_set

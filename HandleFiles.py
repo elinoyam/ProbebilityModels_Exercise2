@@ -20,10 +20,11 @@ class FilesHandler:
     def write_table_to_output_file(self, row_number, values_list):
         with open(file=self.output_file, mode='a') as output_file:
             output_file.write(f'Output{row_number}\n')
-            for row in values_list:
-                print(row)
+            for i, row in enumerate(values_list):
                 printable_list = [f'{round(item, 5)}' for item in row]
                 output_file.write("\t".join(printable_list) + "\n")
+                if i == 9:
+                    break
             # output_file.write(f'{tabulate(list)}\n')
 
     def initialize_output_file(self):
@@ -43,19 +44,21 @@ class FilesHandler:
         with open(file_name, mode='r') as file:
             for line in file:
                 if line[:6] != '<TRAIN' and line[:5] != '<TEST':    # not a header line
-                    list_of_all_words.extend(line.split())
+                    list_of_all_words += line.split()
 
             training_set_size = round(len(list_of_all_words) * split_size) if split_size < 1.0 else len(list_of_all_words)
-            word_index = 0
-            for word in list_of_all_words:
-                if word_index < training_set_size:
-                    training_set[word] += 1
-                else:
-                    validation_set[word] += 1
+            # word_index = 0
+            # for word in list_of_all_words:
+            #     if word_index < training_set_size:
+            #         training_set[word] += 1
+            #     else:
+            #         validation_set[word] += 1
+            #
+            #     word_index += 1
+            training_set.insert(list_of_all_words[:training_set_size])
+            validation_set.insert(list_of_all_words[training_set_size:])
 
-                word_index += 1
-
-        return training_set, validation_set
+        return training_set, validation_set, list_of_all_words[:training_set_size], list_of_all_words[training_set_size:]
 
 
 
