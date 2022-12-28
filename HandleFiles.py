@@ -1,5 +1,4 @@
 from Vocabulary import VocabularySet
-from tabulate import tabulate
 
 vocabulary_size = 300000
 uniform_probability = 1/vocabulary_size
@@ -25,11 +24,10 @@ class FilesHandler:
                 output_file.write("\t".join(printable_list) + "\n")
                 if i == 9:
                     break
-            # output_file.write(f'{tabulate(list)}\n')
 
     def initialize_output_file(self):
         with open(file=self.output_file, mode='w') as output_file:
-            output_file.write(f'Eden Mironi Id-207856097, Elinoy Amar Id-318532132\n')
+            output_file.write(f'Students Eden Mironi, Elinoy Amar. 207856097, 318532132\n')
             output_file.write(f'Output1 {self.development_file}\n')
             output_file.write(f'Output2 {self.test_file}\n')
             output_file.write(f'Output3 {self.input_word}\n')
@@ -47,14 +45,6 @@ class FilesHandler:
                     list_of_all_words += line.split()
 
             training_set_size = round(len(list_of_all_words) * split_size) if split_size < 1.0 else len(list_of_all_words)
-            # word_index = 0
-            # for word in list_of_all_words:
-            #     if word_index < training_set_size:
-            #         training_set[word] += 1
-            #     else:
-            #         validation_set[word] += 1
-            #
-            #     word_index += 1
             training_set.insert(list_of_all_words[:training_set_size])
             validation_set.insert(list_of_all_words[training_set_size:])
 

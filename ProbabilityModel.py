@@ -65,8 +65,12 @@ class ProbabilityModel:
         # calculate each r_class probability (all the words in each r class will be with the same probability)
         for r in self.T_r.keys():
             total = self.T_r[r]
+            n_r = len(self.r_classes[r])
+            if r == 0:
+                n_r = HandleFiles.vocabulary_size - len(small_training_set.keys())
+                
             # if r not in held_out_probability:  # first word with r appearances
-            self.held_out_probability[r] = total / (len(self.r_classes[r]) * held_out_set.total())
+            self.held_out_probability[r] = total / (n_r * held_out_set.total())
 
 
 # prob_model = ProbabilityModel()

@@ -6,8 +6,8 @@ from numpy import arange
 
 if __name__ == '__main__':
     # prob_model = ProbabilityModel()
-    files_handler = FilesHandler(argv)
-
+    # files_handler = FilesHandler(argv)
+    files_handler = FilesHandler(["","develop.txt", "test.txt", "honduras", "output.txt"])
     files_handler.initialize_output_file()  # start filling the output file, will print rows 1-6
 
     training_set, validation_set, train_words_list, valid_words_list = files_handler.get_vocabulary_from_file('development')
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     test_set_size = test_set.total()
     files_handler.write_to_output_file(25, test_set_size)
 
-    lidstone_best_model = ProbabilityModel(training_set.words,model_type="Lidstone", gamma=best_gamma, train_words=test_train_words, test_words=test_val_words)
+    lidstone_best_model = ProbabilityModel(training_set.words,model_type="Lidstone", gamma=best_gamma, train_words=test_val_words, test_words=test_train_words)
     lidstone_best_preplexity = lidstone_best_model.perplexity(test_set)
     files_handler.write_to_output_file(26, lidstone_best_preplexity)
 
