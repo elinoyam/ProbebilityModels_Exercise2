@@ -6,8 +6,8 @@ from numpy import arange
 
 if __name__ == '__main__':
     # prob_model = ProbabilityModel()
-    # files_handler = FilesHandler(argv)
-    files_handler = FilesHandler(["","develop.txt", "test.txt", "honduras", "output.txt"])
+    files_handler = FilesHandler(argv)
+    # files_handler = FilesHandler(["","develop.txt", "test.txt", "honduras", "output.txt"])
     files_handler.initialize_output_file()  # start filling the output file, will print rows 1-6
 
     training_set, validation_set, train_words_list, valid_words_list = files_handler.get_vocabulary_from_file('development')
