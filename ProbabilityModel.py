@@ -53,7 +53,6 @@ class ProbabilityModel:
                     self.r_classes[0].append(key)
 
         # for each group of appearances - count the number of appearances in held_out_set
-        #print(self.r_classes.keys())
         for r in self.r_classes.keys():
             words_list = self.r_classes[r]
             for word in words_list:
@@ -72,7 +71,5 @@ class ProbabilityModel:
             # if r not in held_out_probability:  # first word with r appearances
             self.held_out_probability[r] = total / (n_r * held_out_set.total())
 
-
-# prob_model = ProbabilityModel()
 
 

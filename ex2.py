@@ -5,9 +5,8 @@ from ProbabilityModel import ProbabilityModel
 from numpy import arange
 
 if __name__ == '__main__':
-    # prob_model = ProbabilityModel()
     files_handler = FilesHandler(argv)
-    # files_handler = FilesHandler(["","develop.txt", "test.txt", "honduras", "output.txt"])
+    
     files_handler.initialize_output_file()  # start filling the output file, will print rows 1-6
 
     training_set, validation_set, train_words_list, valid_words_list = files_handler.get_vocabulary_from_file('development')
@@ -23,7 +22,6 @@ if __name__ == '__main__':
     input_word_freq = training_set[files_handler.input_word] / training_set.total()
     files_handler.write_to_output_file(12, input_word_freq)
 
-    # training_set['unseen-word'] will return 0 if not exists, else calculate as the usual formula
     unseen_word_freq = training_set['unseen-word'] / training_set.total() 
     files_handler.write_to_output_file(13, unseen_word_freq)
 
@@ -53,7 +51,7 @@ if __name__ == '__main__':
             min_preplexity = preplexity
             best_gamma = float(gamma)
             
-    files_handler.write_to_output_file(19, best_gamma)
+    files_handler.write_to_output_file(19, format(best_gamma, '.2f'))
     files_handler.write_to_output_file(20, min_preplexity)
 
     # held_out_model
@@ -63,7 +61,10 @@ if __name__ == '__main__':
     files_handler.write_to_output_file(21, small_training_set_size)
     files_handler.write_to_output_file(22, held_out_set_size)
 
-    heldout_model = ProbabilityModel(small_training_set.words, model_type="HeldOut", train_words=tr_words, test_words=val_words)
+    test_set, _ , test_train_words , test_val_words = files_handler.get_vocabulary_from_file('test', split_size=1.0)
+    test_set_size = test_set.total()
+
+    heldout_model = ProbabilityModel(small_training_set.words, model_type="HeldOut", train_words=test_val_words, test_words=test_train_words)
     heldout_model.set_held_out_data(small_training_set, held_out_set)
 
     input_word_prob = heldout_model.score(files_handler.input_word)
@@ -72,8 +73,6 @@ if __name__ == '__main__':
     files_handler.write_to_output_file(24, unseen_word_prob)
 
 
-    test_set, _ , test_train_words , test_val_words = files_handler.get_vocabulary_from_file('test', split_size=1.0)
-    test_set_size = test_set.total()
     files_handler.write_to_output_file(25, test_set_size)
 
     lidstone_best_model = ProbabilityModel(training_set.words,model_type="Lidstone", gamma=best_gamma, train_words=test_val_words, test_words=test_train_words)
@@ -83,7 +82,7 @@ if __name__ == '__main__':
     held_out_perplexity = heldout_model.perplexity(test_set)
     files_handler.write_to_output_file(27, held_out_perplexity)
 
-    better_model = 'L' if lidstone_best_preplexity > held_out_perplexity else 'H'
+    better_model = 'L' if lidstone_best_preplexity < held_out_perplexity else 'H'
     files_handler.write_to_output_file(28, better_model)
 
     output_table = []
@@ -95,18 +94,20 @@ if __name__ == '__main__':
         else:   # add the word to the existing words list with the same appearances count
             r_classes_dev[r].append(key)
 
-    #print(r_classes_dev.keys())
-    for i, r in enumerate(heldout_model.r_classes.keys().__reversed__()):
-        f1 = ((r + best_gamma*len(heldout_model.r_classes[r])) / (training_set_size + vocabulary_size * best_gamma)) * training_set_size
+    for r in range(10):
+        if r == 0:
+            f1 =  lidstone_best_model.score('unseen-word')*training_set_size 
+            NTr = 300000 - len(small_training_set.keys())
+        else:
+            f1 =  lidstone_best_model.score(r_classes_dev[r][0])*training_set_size 
+            NTr = len(heldout_model.r_classes[r])
         f2 = heldout_model.held_out_probability[r]*small_training_set_size
-        NTr = len(heldout_model.r_classes[r])
+        
         tr = 0
         for event in heldout_model.r_classes[r]:
-            # print(heldout_model.Counter[event])
             tr += held_out_set.words[event]
         output_table.append([r, f1, f2, NTr, tr])
-        if i == 9:
-            break
+
     files_handler.write_table_to_output_file(29, output_table)
 
 

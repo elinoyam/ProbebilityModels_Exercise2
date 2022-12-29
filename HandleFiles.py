@@ -14,11 +14,11 @@ class FilesHandler:
 
     def write_to_output_file(self, row_number, value):
         with open(file=self.output_file, mode='a') as output_file:
-            output_file.write(f'Output{row_number} {value}\n')
+            output_file.write(f'#Output{row_number} {value}\n')
     
     def write_table_to_output_file(self, row_number, values_list):
         with open(file=self.output_file, mode='a') as output_file:
-            output_file.write(f'Output{row_number}\n')
+            output_file.write(f'#Output{row_number}\n')
             for i, row in enumerate(values_list):
                 printable_list = [f'{round(item, 5)}' for item in row]
                 output_file.write("\t".join(printable_list) + "\n")
@@ -27,13 +27,13 @@ class FilesHandler:
 
     def initialize_output_file(self):
         with open(file=self.output_file, mode='w') as output_file:
-            output_file.write(f'Students Eden Mironi, Elinoy Amar. 207856097, 318532132\n')
-            output_file.write(f'Output1 {self.development_file}\n')
-            output_file.write(f'Output2 {self.test_file}\n')
-            output_file.write(f'Output3 {self.input_word}\n')
-            output_file.write(f'Output4 {self.output_file}\n')
-            output_file.write(f'Output5 {vocabulary_size}\n')
-            output_file.write(f'Output5 {uniform_probability}\n')
+            output_file.write(f'#Students Eden Mironi, Elinoy Amar. 207856097, 318532132\n')
+            output_file.write(f'#Output1 {self.development_file}\n')
+            output_file.write(f'#Output2 {self.test_file}\n')
+            output_file.write(f'#Output3 {self.input_word}\n')
+            output_file.write(f'#Output4 {self.output_file}\n')
+            output_file.write(f'#Output5 {vocabulary_size}\n')
+            output_file.write(f'#Output5 {uniform_probability}\n')
 
     def get_vocabulary_from_file(self, input_file = 'development', split_size=0.9):
         file_name = self.development_file if input_file == 'development' else self.test_file
